@@ -5,14 +5,116 @@
     <meta charset="UTF-8">
     <title>Minimal Page</title>
     <style>
-        body {
-            background: linear-gradient(135deg, #b3d8f7 0%, #f7c873 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Style for the dynamic canvas shown below the table */
+        #dynamic-table-canvas {
+            display: none;
+            position: fixed;
+            left: calc(20vw + 750px);
+            top: calc(50% - 340px);
             margin: 0;
-            height: 100vh;
+            background: #eaf4fb;
+            border: 2px solid #7fa8c9;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        /* Style for table buttons in the contact-message */
+        #contact-message button {
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+        #contact-message button:not(.unclickable):hover {
+            background: #4caf50;
+            color: #fff;
+            transform: scale(1.08);
+        }
+        #contact-message button.unclickable {
+            background: #e0e0e0 !important;
+            color: #888 !important;
+            cursor: default !important;
+            pointer-events: none;
+        }
+        /* Center the contact-message both horizontally and vertically */
+        #contact-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 20vw;
+            transform: translateY(-50%);
+            min-width: 320px;
+            max-width: 600px;
+            background: #fffbe6;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2rem 2.5rem;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #111;
+            font-weight: bold;
+            z-index: 200;
+        }
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 48px;
+            background: #7fa8c9;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+        .header-btn {
+            background: #fff;
+            color: #49739a;
+            border: none;
+            border-radius: 4px;
+            padding: 0.4rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            transition: background 0.2s, color 0.2s;
+            margin: 0 0.75rem;
+        }
+        .header-btn:hover {
+            background: #49739a;
+            color: #fff;
+        }
+        .retro-canvas {
+            margin-top: 200px;
+            margin-bottom: 2rem;
+            background: #eaf4fb;
+            border: 2px solid #7fa8c9;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        .letter-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 100px;
+        }
+        .letter-img {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            max-width: 320px;
+            width: 30vw;
+        }
+        #bigAImg.letter-img {
+            max-width: 420px;
+            width: 40vw;
+            cursor: pointer;
+        }
+        body {
+            background: #c2e1ff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            width: 100vw;
         }
         h1 {
             color: #7fa8c9;
@@ -21,53 +123,399 @@
             text-shadow: 2px 2px 0 #fff, 0 0 8px #f7c873;
         }
     </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Get all header buttons
+            const headerBtns = document.querySelectorAll('.header-btn');
+            // Get the contact message container
+            const contactMsg = document.getElementById('contact-message');
+            // Find the 'Handledning', 'Startsida', 'Kontakt', and 'Om Monsterbokstäverna' buttons by their text
+            const handledningBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Handledning');
+            const startsidaBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Startsida');
+            const kontaktBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Kontakt');
+            const omMonsterBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Om Monsterbokstäverna');
+            // Get the canvas and the row of letter images
+            const canvas = document.getElementById('retroCanvas');
+            const letterRow = document.querySelector('.letter-row');
+
+            // When 'Handledning' is clicked, show a 3x8 table of buttons
+            if (handledningBtn && contactMsg) {
+                handledningBtn.addEventListener('click', function() {
+                    let tableHtml = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
+                    for (let y = 0; y < 8; y++) {
+                        tableHtml += '<tr>';
+                        for (let x = 0; x < 3; x++) {
+                            // Only show the first button in the first row
+                            if (y === 0 && x > 0) continue;
+                            let label = '';
+                            let extraClass = '';
+                            if (x === 0) {
+                                if (y === 0) {
+                                    label = 'Svårighetsnivå';
+                                    extraClass = 'unclickable';
+                                } else label = 'Nivå ' + y;
+                            } else if (x === 1) label = 'Instruktionsfilm';
+                            else if (x === 2) label = 'Övningar';
+                            tableHtml += `<td><button class="${extraClass}" style=\"padding:1.2rem 2.5rem;font-size:1.1rem;border-radius:8px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;\">${label}</button></td>`;
+                        }
+                        tableHtml += '</tr>';
+                    }
+                    tableHtml += '</table></div>';
+                    contactMsg.innerHTML = tableHtml;
+                    contactMsg.style.display = 'block';
+                    // Hide the dynamic canvas when table is redrawn
+                    const dynCanvas = document.getElementById('dynamic-table-canvas');
+                    if (dynCanvas) dynCanvas.style.display = 'none';
+
+                    // Add click listeners to all table buttons except the unclickable one
+                    setTimeout(function() {
+                        const tableButtons = contactMsg.querySelectorAll('button:not(.unclickable)');
+                        tableButtons.forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                if (dynCanvas) dynCanvas.style.display = 'block';
+                            });
+                        });
+                    }, 0);
+                });
+            }
+
+            // Loop through all header buttons
+            headerBtns.forEach(btn => {
+                // Hide the dynamic canvas when any header button is clicked
+                if (btn !== startsidaBtn) {
+                    // For all buttons except 'Startsida', hide the canvas and letter images when clicked
+                    btn.addEventListener('click', function() {
+                        if (canvas) canvas.style.display = 'none'; // Hide the canvas
+                        if (letterRow) letterRow.style.display = 'none'; // Hide the letter images row
+                        const dynCanvas = document.getElementById('dynamic-table-canvas');
+                        if (dynCanvas) dynCanvas.style.display = 'none';
+                    });
+                } else {
+                    // For the 'Startsida' button, show the canvas and letter images when clicked
+                    btn.addEventListener('click', function() {
+                        if (canvas) canvas.style.display = ''; // Show the canvas (reset to default)
+                        if (letterRow) letterRow.style.display = ''; // Show the letter images row (reset to default)
+                        const dynCanvas = document.getElementById('dynamic-table-canvas');
+                        if (dynCanvas) dynCanvas.style.display = 'none';
+                    });
+                }
+            });
+
+            // When 'Kontakt' is clicked, show the email address
+            if (kontaktBtn && contactMsg) {
+                kontaktBtn.addEventListener('click', function() {
+                    contactMsg.textContent = 'Jimgustafsson91@gmail.com';
+                    contactMsg.style.display = 'block';
+                });
+            }
+
+            // When 'Om Monsterbokstäverna' is clicked, show info text
+            if (omMonsterBtn && contactMsg) {
+                omMonsterBtn.addEventListener('click', function() {
+                    contactMsg.innerHTML = `Modernt, barnvänligt och motiverande material som tydliggör koppling bokstavsnamn - bokstavsljud, liten-stor bokstav och som använder inbyggda munbilder för att öka medvetenhet kring hur vi kan använda munnen för att säga de olika bokstavsljuden.<br><br>
+
+    Vi erbjuder ett tydligt stöd digitalt med handledning samt ett ansikte i 3d som med animation visar hur man använder munnen, läppar, tunga och tänder för att säga bokstävernas olika ljud.<br><br>
+
+    Metoden bryter ner övningar i svårighetsnivå med ett tydligt stöd för<br>
+    Att introducera och förklara övningen<br>
+    Visuellt stöd för att skilja övningarna åt<br>
+    Att enkelt få en bild av barnets nuvarande förmåga så träningen blir utifrån barnets proximala utvecklingszon.`;
+                    contactMsg.style.display = 'block';
+                });
+            }
+
+            // When any other header button is clicked (except Kontakt, Om Monsterbokstäverna, Handledning), hide the contact message
+            headerBtns.forEach(btn => {
+                if (btn.textContent.trim() !== 'Kontakt' && btn.textContent.trim() !== 'Om Monsterbokstäverna' && btn.textContent.trim() !== 'Handledning') {
+                    btn.addEventListener('click', function() {
+                        if (contactMsg) contactMsg.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
 </head>
 <body>
+    <!-- Contact message container, initially hidden -->
+    <div id="contact-message"></div>
+    <canvas id="dynamic-table-canvas" width="900" height="675"></canvas>
+    <div class="top-header">
+            <button class="header-btn">Startsida</button>
+            <button class="header-btn">Handledning</button>
+            <button class="header-btn">Om Monsterbokstäverna</button>
+            <button class="header-btn">Kontakt</button>
+    </div>
     <div style="display:flex;flex-direction:column;align-items:center;">
-        <canvas id="retroCanvas" width="600" height="600" style="margin-top:900px;margin-bottom:2rem;background:#eaf4fb;border:2px solid #7fa8c9;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);"></canvas>
-        <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2rem;margin-top:calc(45vh - 400px);">
-            <img src="bigA.png" id="bigMImg" alt="Big M Retro" style="max-width:420px;width:40vw;box-shadow:0 4px 24px rgba(0,0,0,0.08);border-radius:12px;cursor:pointer;" />
-            <img src="bigL.png" alt="Big N Retro" style="max-width:320px;width:30vw;box-shadow:0 4px 24px rgba(0,0,0,0.08);border-radius:12px;" />
+    <canvas id="retroCanvas" width="600" height="600" class="retro-canvas"></canvas>
+        <div class="letter-row">
+            <img src="bigA.png" id="bigAImg" alt="Big A Retro" class="letter-img" />
+            <img src="bigL.png" alt="Big L Retro" class="letter-img" />
+            <img src="bigMredo3.png" id="bigMImg" alt="Big M Retro" class="letter-img" />
+            <img src="bigO4Cd.png" alt="Big O Retro" class="letter-img" />
+            <img src="bigsredo.png" id="bigSImg" alt="Big S Retro" class="letter-img" />
+            <img src="bigRredo5.png" id="bigRImg" alt="Big R Retro" class="letter-img" />
+        </div>
+    </div>
         </div>
     </div>
     <script>
-    // Play video on canvas when bigMredo3.png is clicked
+    // Video loop logic for mouthRotation.mp4
     const bigMImg = document.getElementById('bigMImg');
-    const canvas = document.getElementById('retroCanvas');
-    let videoPlaying = false;
-    let video;
 
-    bigMImg.addEventListener('click', function() {
-        if (videoPlaying) return;
+    function playMtalkVideo() {
+        stopVideo();
         videoPlaying = true;
         video = document.createElement('video');
-        video.src = 'atalk.mp4';
+        video.src = 'mtalk.mp4';
         video.width = 600;
         video.height = 600;
         video.autoplay = true;
-        video.muted = false;
+        video.loop = false;
+        video.muted = true; // mute video, play audio separately
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        video.addEventListener('play', function drawFrame() {
+            if (!videoPlaying) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            animationFrameId = requestAnimationFrame(drawFrame);
+        });
+        video.addEventListener('ended', function() {
+            videoPlaying = false;
+            document.body.removeChild(video);
+        });
+        video.play();
+    }
+    const bigAImg = document.getElementById('bigAImg');
+    const bigLImg = document.querySelector('img[src="bigL.png"]');
+    const canvas = document.getElementById('retroCanvas');
+    function playLtalkVideo() {
+        stopVideo();
+        videoPlaying = true;
+        video = document.createElement('video');
+        video.src = 'lTalk.mp4';
+        video.width = 600;
+        video.height = 600;
+        video.autoplay = true;
+        video.loop = false;
+        video.muted = true; // mute video, play audio separately
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        // Play audio file
+        let audio = document.createElement('audio');
+        audio.src = 'll.mp3';
+        audio.autoplay = true;
+        document.body.appendChild(audio);
+
+        // Sync audio with video
+        video.addEventListener('play', function drawFrame() {
+            if (!videoPlaying) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            animationFrameId = requestAnimationFrame(drawFrame);
+        });
+        video.addEventListener('ended', function() {
+            videoPlaying = false;
+            document.body.removeChild(video);
+            if (audio) {
+                audio.pause();
+                document.body.removeChild(audio);
+            }
+        });
+        video.play();
+        audio.play();
+    }
+    if (bigLImg) {
+        bigLImg.addEventListener('click', playLtalkVideo);
+    }
+    let videoPlaying = false;
+    let video;
+    let animationFrameId;
+
+    function startLoopingVideo() {
+        if (videoPlaying) return;
+        videoPlaying = true;
+        video = document.createElement('video');
+        video.src = 'mouthRotation.mp4';
+        video.width = 600;
+        video.height = 600;
+        video.autoplay = true;
+        video.loop = true;
+    video.muted = true;
         video.playsInline = true;
         video.style.display = 'none';
         document.body.appendChild(video);
         video.play();
         function drawFrame() {
             if (!videoPlaying) return;
-            if (video.paused || video.ended) {
-                videoPlaying = false;
-                document.body.removeChild(video);
-                return;
-            }
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            requestAnimationFrame(drawFrame);
+            animationFrameId = requestAnimationFrame(drawFrame);
         }
         video.addEventListener('play', drawFrame);
+    }
+
+    function stopVideo() {
+        if (!videoPlaying) return;
+        videoPlaying = false;
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        if (video) {
+            video.pause();
+            document.body.removeChild(video);
+            video = null;
+        }
+        // Optionally clear the canvas
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function playAtalkVideo() {
+        stopVideo();
+        videoPlaying = true;
+        video = document.createElement('video');
+        video.src = 'atalk.mp4';
+        video.width = 600;
+        video.height = 600;
+        video.autoplay = true;
+        video.loop = false;
+        video.muted = true; // mute video, play audio separately
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        // Play audio file
+        let audio = document.createElement('audio');
+        audio.src = 'aa.mp3';
+        audio.autoplay = true;
+        document.body.appendChild(audio);
+
+        // Sync audio with video
+        video.addEventListener('play', function drawFrame() {
+            if (!videoPlaying) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            animationFrameId = requestAnimationFrame(drawFrame);
+        });
         video.addEventListener('ended', function() {
             videoPlaying = false;
             document.body.removeChild(video);
+            if (audio) {
+                audio.pause();
+                document.body.removeChild(audio);
+            }
         });
-    });
+        video.play();
+        audio.play();
+    }
+
+    // Start looping video when page loads
+    window.addEventListener('DOMContentLoaded', startLoopingVideo);
+
+    // Play mtalk.mp4 when bigMredo3.png is clicked
+    if (bigMImg) {
+        bigMImg.addEventListener('click', playMtalkVideo);
+    }
+    // Play atalk.mp4 when bigA.png is clicked
+    if (bigAImg) {
+        bigAImg.addEventListener('click', playAtalkVideo);
+    }
+
+    // Play sTalk.mp4 when bigsredo.png is clicked
+    const bigSImg = document.getElementById('bigSImg');
+    function playStalkVideo() {
+        stopVideo();
+        videoPlaying = true;
+        video = document.createElement('video');
+        video.src = 'sTalk.mp4';
+        video.width = 600;
+        video.height = 600;
+        video.autoplay = true;
+        video.loop = false;
+        video.muted = true; // mute video, play audio separately
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        // Play audio file
+        let audio = document.createElement('audio');
+        audio.src = 'ss.mp3';
+        audio.autoplay = true;
+        document.body.appendChild(audio);
+
+        // Sync audio with video
+        video.addEventListener('play', function drawFrame() {
+            if (!videoPlaying) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            animationFrameId = requestAnimationFrame(drawFrame);
+        });
+        video.addEventListener('ended', function() {
+            videoPlaying = false;
+            document.body.removeChild(video);
+            if (audio) {
+                audio.pause();
+                document.body.removeChild(audio);
+            }
+        });
+        video.play();
+        audio.play();
+    }
+    if (bigSImg) {
+        bigSImg.addEventListener('click', playStalkVideo);
+    }
+    // Play rTalk.mp4 when bigRredo5.png is clicked
+    const bigRImg = document.getElementById('bigRImg');
+    function playRtalkVideo() {
+        stopVideo();
+        videoPlaying = true;
+        video = document.createElement('video');
+        video.src = 'rTalk.mp4';
+        video.width = 600;
+        video.height = 600;
+        video.autoplay = true;
+        video.loop = false;
+        video.muted = true; // mute video, play audio separately
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        // Play audio file
+        let audio = document.createElement('audio');
+        audio.src = 'rr.mp3';
+        audio.autoplay = true;
+        document.body.appendChild(audio);
+
+        // Sync audio with video
+        video.addEventListener('play', function drawFrame() {
+            if (!videoPlaying) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            animationFrameId = requestAnimationFrame(drawFrame);
+        });
+        video.addEventListener('ended', function() {
+            videoPlaying = false;
+            document.body.removeChild(video);
+            if (audio) {
+                audio.pause();
+                document.body.removeChild(audio);
+            }
+        });
+        video.play();
+        audio.play();
+    }
+    if (bigRImg) {
+        bigRImg.addEventListener('click', playRtalkVideo);
+    }
     </script>
 </body>
 </html>
