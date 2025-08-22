@@ -349,17 +349,6 @@
             <button class="header-btn">Kontakt</button>
         </div>
     </div>
-    // Hamburger menu logic
-    const hamburger = document.getElementById('hamburger-menu');
-    const headerBtns = document.getElementById('header-btns');
-    hamburger.addEventListener('click', function() {
-        headerBtns.classList.toggle('open');
-    });
-    hamburger.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-            headerBtns.classList.toggle('open');
-        }
-    });
     <div style="display:flex;flex-direction:column;align-items:center;">
     <canvas id="retroCanvas" width="600" height="600" class="retro-canvas"></canvas>
         <div class="letter-row">
