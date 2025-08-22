@@ -108,36 +108,22 @@
         }
         /* Center the contact-message both horizontally and vertically */
         #contact-message {
-        .contact-message-content {
-            font-size: 1.05rem;
-            line-height: 1.45;
-            text-align: left;
-        }
-        @media (max-width: 600px) {
-            .contact-message-content {
-                font-size: 0.97rem;
-                line-height: 1.35;
-            }
-        }
             display: none;
             position: fixed;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 0;
-            width: 90vw;
+            left: 20vw;
+            transform: translateY(-50%);
+            min-width: 320px;
             max-width: 600px;
             background: #fffbe6;
             border-radius: 12px;
             box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            padding: 1.2rem 1rem;
+            padding: 2rem 2.5rem;
             text-align: center;
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             color: #111;
             font-weight: bold;
             z-index: 200;
-            font-size: 1rem;
-            padding: 0.7rem 1.2rem;
         }
         .top-header {
             position: fixed;
@@ -208,19 +194,6 @@
             cursor: pointer;
             height: auto;
         @media (max-width: 900px) {
-        @media (max-width: 600px) {
-            #contact-message {
-                font-size: 0.98rem;
-                padding: 0.7rem 0.5rem;
-                width: 98vw;
-                min-width: 0;
-                max-width: 99vw;
-            }
-            #contact-message button {
-                font-size: 0.95rem;
-                padding: 0.5rem 0.7rem;
-            }
-        }
             .retro-canvas {
                 margin-top: 6vw;
                 width: 98vw;
@@ -301,7 +274,7 @@
                         tableHtml += '</tr>';
                     }
                     tableHtml += '</table></div>';
-                    contactMsg.innerHTML = `<div class="contact-message-content">${tableHtml}</div>`;
+                    contactMsg.innerHTML = tableHtml;
                     contactMsg.style.display = 'block';
                     // Hide the dynamic canvas when table is redrawn
                     const dynCanvas = document.getElementById('dynamic-table-canvas');
@@ -344,7 +317,7 @@
             // When 'Kontakt' is clicked, show the email address
             if (kontaktBtn && contactMsg) {
                 kontaktBtn.addEventListener('click', function() {
-                    contactMsg.innerHTML = `<div class='contact-message-content'>Jimgustafsson91@gmail.com</div>`;
+                    contactMsg.textContent = 'Jimgustafsson91@gmail.com';
                     contactMsg.style.display = 'block';
                 });
             }
@@ -352,14 +325,14 @@
             // When 'Om Monsterbokstäverna' is clicked, show info text
             if (omMonsterBtn && contactMsg) {
                 omMonsterBtn.addEventListener('click', function() {
-                    contactMsg.innerHTML = `<div class='contact-message-content'>
-                        Modernt, barnvänligt och motiverande material som tydliggör koppling bokstavsnamn - bokstavsljud, liten-stor bokstav och som använder inbyggda munbilder för att öka medvetenhet kring hur vi kan använda munnen för att säga de olika bokstavsljuden.<br><br>
-                        Vi erbjuder ett tydligt stöd digitalt med handledning samt ett ansikte i 3d som med animation visar hur man använder munnen, läppar, tunga och tänder för att säga bokstävernas olika ljud.<br><br>
-                        Metoden bryter ner övningar i svårighetsnivå med ett tydligt stöd för<br>
-                        Att introducera och förklara övningen<br>
-                        Visuellt stöd för att skilja övningarna åt<br>
-                        Att enkelt få en bild av barnets nuvarande förmåga så träningen blir utifrån barnets proximala utvecklingszon.
-                    </div>`;
+                    contactMsg.innerHTML = `Modernt, barnvänligt och motiverande material som tydliggör koppling bokstavsnamn - bokstavsljud, liten-stor bokstav och som använder inbyggda munbilder för att öka medvetenhet kring hur vi kan använda munnen för att säga de olika bokstavsljuden.<br><br>
+
+    Vi erbjuder ett tydligt stöd digitalt med handledning samt ett ansikte i 3d som med animation visar hur man använder munnen, läppar, tunga och tänder för att säga bokstävernas olika ljud.<br><br>
+
+    Metoden bryter ner övningar i svårighetsnivå med ett tydligt stöd för<br>
+    Att introducera och förklara övningen<br>
+    Visuellt stöd för att skilja övningarna åt<br>
+    Att enkelt få en bild av barnets nuvarande förmåga så träningen blir utifrån barnets proximala utvecklingszon.`;
                     contactMsg.style.display = 'block';
                 });
             }
@@ -683,7 +656,7 @@
     }
 
 
-    console.log('a.1');
+    console.log('a.0');
     </script>
 </body>
 </html>
