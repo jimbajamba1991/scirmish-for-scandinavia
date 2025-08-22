@@ -347,6 +347,19 @@
             });
         });
     </script>
+    // Hamburger menu logic
+    const hamburger = document.getElementById('hamburger-menu');
+    const headerBtnsDiv = document.getElementById('header-btns');
+    if (hamburger && headerBtnsDiv) {
+        hamburger.addEventListener('click', function() {
+            headerBtnsDiv.classList.toggle('open');
+        });
+        hamburger.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                headerBtnsDiv.classList.toggle('open');
+            }
+        });
+    }
 </head>
 <body>
     <!-- Contact message container, initially hidden -->
