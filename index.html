@@ -2,6 +2,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        /* Hamburger menu styles */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 201;
+        }
+        .hamburger span {
+            height: 4px;
+            width: 100%;
+            background: #49739a;
+            margin: 5px 0;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        .top-header {
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+        .header-btns {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        @media (max-width: 700px) {
+            .header-btns {
+                display: none;
+                position: absolute;
+                top: 48px;
+                left: 0;
+                width: 100vw;
+                flex-direction: column;
+                background: #7fa8c9;
+                z-index: 200;
+                padding: 1rem 0;
+            }
+            .header-btns.open {
+                display: flex;
+            }
+            .hamburger {
+                display: flex;
+            }
+        }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minimal Page</title>
@@ -287,11 +337,29 @@
     <div id="contact-message"></div>
     <canvas id="dynamic-table-canvas" width="900" height="675"></canvas>
     <div class="top-header">
+        <div class="hamburger" id="hamburger-menu" aria-label="Open navigation" tabindex="0">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="header-btns" id="header-btns">
             <button class="header-btn">Startsida</button>
             <button class="header-btn">Handledning</button>
             <button class="header-btn">Om Monsterbokstäverna</button>
             <button class="header-btn">Kontakt</button>
+        </div>
     </div>
+    // Hamburger menu logic
+    const hamburger = document.getElementById('hamburger-menu');
+    const headerBtns = document.getElementById('header-btns');
+    hamburger.addEventListener('click', function() {
+        headerBtns.classList.toggle('open');
+    });
+    hamburger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            headerBtns.classList.toggle('open');
+        }
+    });
     <div style="display:flex;flex-direction:column;align-items:center;">
     <canvas id="retroCanvas" width="600" height="600" class="retro-canvas"></canvas>
         <div class="letter-row">
