@@ -473,7 +473,8 @@
             setTransition(false);
             startX = e.touches[0].clientX;
             dragOffset = 0;
-        });
+            e.preventDefault(); // Prevent page scroll
+        }, { passive: false });
         carousel.addEventListener('touchmove', function(e) {
             if (!isDragging) return;
             currentX = e.touches[0].clientX;
@@ -483,7 +484,8 @@
             if (offsetVW > 0) offsetVW = 0;
             if (offsetVW < -maxPair * pairWidthVW) offsetVW = -maxPair * pairWidthVW;
             updateCarousel(offsetVW);
-        });
+            e.preventDefault(); // Prevent page scroll
+        }, { passive: false });
         carousel.addEventListener('touchend', function(e) {
             if (!isDragging) return;
             isDragging = false;
@@ -496,7 +498,8 @@
             currentPair = snappedPair;
             updateCarousel(-currentPair * pairWidthVW);
             lastOffset = -currentPair * pairWidthVW;
-        });
+            e.preventDefault(); // Prevent page scroll
+        }, { passive: false });
 
         // Mouse drag for desktop
         carousel.addEventListener('mousedown', function(e) {
@@ -801,7 +804,7 @@
     }
 
 
-    console.log('b.0');
+    console.log('c.0');
     </script>
 </body>
 </html>
