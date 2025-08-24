@@ -3,6 +3,9 @@
 <html lang="en">
 <head>
     <style>
+        html, body {
+            background: #c2e1ff !important;
+        }
         /* Hamburger menu styles */
         .hamburger {
             display: none;
@@ -171,19 +174,41 @@
             margin-right: auto;
         }
         .letter-row {
+            display: none;
+        }
+        .letter-carousel-container {
+            width: 100vw;
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            margin-top: -22px;
+            position: relative;
+        }
+        .letter-carousel {
             display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 48px;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        padding-bottom: 1rem;
-        width: 100vw;
-        box-sizing: border-box;
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+            will-change: transform;
+        }
+        .letter-img {
+            height: 120px;
+            width: auto;
+            min-width: 40px;
+            max-width: 90vw;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            margin: 0 1vw;
+            display: block;
+        }
+        @media (min-width: 700px) {
+            .letter-carousel-container {
+                max-width: 600px;
+            }
+            .letter-img {
+                height: 160px;
+                width: auto;
+                min-width: 60px;
+                max-width: 240px;
+            }
         }
         .letter-img {
             box-shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -196,12 +221,21 @@
         margin-right: 1rem;
         }
         #bigAImg.letter-img {
-            max-width: 260px;
-            width: 22vw;
-            min-width: 140px;
+        }
+        #bigLImg.letter-img {
+            height: 120px;
+            width: auto;
+            min-width: 40px;
+            max-width: 90vw;
             cursor: pointer;
+            display: inline-block;
+            max-width: 40vw;
+            max-height: 180px;
+            width: auto;
             height: auto;
-        display: inline-block;
+            min-width: 100px;
+            cursor: pointer;
+            display: inline-block;
         @media (max-width: 900px) {
             .retro-canvas {
                 margin-top: 6vw;
@@ -215,20 +249,12 @@
             }
             .letter-img {
                 max-width: 40vw;
-                width: 40vw;
-                min-width: 80px;
-            }
-            #bigAImg.letter-img {
-                max-width: 50vw;
-                width: 50vw;
-                min-width: 100px;
-            }
-            #dynamic-table-canvas {
-                width: 98vw;
-                height: 60vw;
-                min-width: 0;
-                min-height: 0;
-            }
+                height: 120px;
+                width: auto;
+                min-width: 40px;
+                max-width: 90vw;
+                cursor: pointer;
+                display: inline-block;
         }
         }
         body {
@@ -394,7 +420,8 @@
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;">
     <canvas id="retroCanvas" width="600" height="600" class="retro-canvas"></canvas>
-        <div class="letter-row">
+    <div class="letter-carousel-container">
+        <div class="letter-carousel" id="letterCarousel">
             <img src="bigA.png" id="bigAImg" alt="Big A Retro" class="letter-img" />
             <img src="bigL.png" alt="Big L Retro" class="letter-img" />
             <img src="bigMredo3.png" id="bigMImg" alt="Big M Retro" class="letter-img" />
@@ -402,6 +429,52 @@
             <img src="bigsredo.png" id="bigSImg" alt="Big S Retro" class="letter-img" />
             <img src="bigRredo5.png" id="bigRImg" alt="Big R Retro" class="letter-img" />
         </div>
+    </div>
+    <script>
+    // Letter carousel logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const carousel = document.getElementById('letterCarousel');
+        const images = Array.from(carousel.querySelectorAll('.letter-img'));
+        let currentPair = 0;
+        function updateCarousel() {
+            const offset = -currentPair * 100;
+            carousel.style.transform = `translateX(${offset}vw)`;
+        }
+        function playSwipeSound() {
+            const audio = document.createElement('audio');
+            audio.src = 'swipeSound.mp3';
+            audio.autoplay = true;
+            audio.onended = () => audio.remove();
+            document.body.appendChild(audio);
+        }
+        function showPair(index, playSound = false) {
+            const newPair = Math.max(0, Math.min(index, Math.floor((images.length-1)/2)));
+            if (playSound && newPair !== currentPair) playSwipeSound();
+            currentPair = newPair;
+            updateCarousel();
+        }
+        // Touch events for swipe
+        let startX = null;
+        carousel.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+        carousel.addEventListener('touchend', function(e) {
+            if (startX === null) return;
+            let endX = e.changedTouches[0].clientX;
+            let dx = endX - startX;
+            if (dx < -30) showPair(currentPair + 1, true);
+            else if (dx > 30) showPair(currentPair - 1, true);
+            startX = null;
+        });
+        // Keyboard navigation (desktop)
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') showPair(currentPair - 1, true);
+            if (e.key === 'ArrowRight') showPair(currentPair + 1, true);
+        });
+        // Initial state
+        showPair(0);
+    });
+    </script>
     </div>
         </div>
     </div>
@@ -665,7 +738,7 @@
     }
 
 
-    console.log('a.0');
+    console.log('b.0');
     </script>
 </body>
 </html>
