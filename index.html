@@ -177,7 +177,13 @@
             justify-content: center;
             gap: 2rem;
             margin-top: 48px;
-            flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 1rem;
+        width: 100vw;
+        box-sizing: border-box;
         }
         .letter-img {
             box-shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -186,6 +192,8 @@
             width: 18vw;
             min-width: 120px;
             height: auto;
+        display: inline-block;
+        margin-right: 1rem;
         }
         #bigAImg.letter-img {
             max-width: 260px;
@@ -193,6 +201,7 @@
             min-width: 140px;
             cursor: pointer;
             height: auto;
+        display: inline-block;
         @media (max-width: 900px) {
             .retro-canvas {
                 margin-top: 6vw;
