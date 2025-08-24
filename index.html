@@ -431,18 +431,20 @@
         </div>
     </div>
     <script>
-    // Letter carousel logic with smooth dragging
+    // Letter carousel logic with smooth dragging and 3-at-a-time view
     document.addEventListener('DOMContentLoaded', function() {
         const carousel = document.getElementById('letterCarousel');
         const images = Array.from(carousel.querySelectorAll('.letter-img'));
-        let currentPair = 0;
-        let isDragging = false;
-        let startX = 0;
-        let currentX = 0;
-        let dragOffset = 0;
-        let lastOffset = 0;
-        const pairWidthVW = 100; // Each pair is 100vw wide
-        const maxPair = Math.floor((images.length-1)/2);
+        const imagesPerPage = 3;
+        let currentPage = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentX = 0;
+    let dragOffset = 0;
+    let lastOffset = 0;
+    let dragMoved = false;
+        const pageWidthVW = 100; // Each page is 100vw wide
+        const maxPage = Math.ceil(images.length / imagesPerPage) - 1;
 
         function setTransition(enable) {
             carousel.style.transition = enable ? 'transform 0.3s cubic-bezier(.4,0,.2,1)' : 'none';
@@ -457,19 +459,20 @@
             audio.onended = () => audio.remove();
             document.body.appendChild(audio);
         }
-        function showPair(index, playSound = false) {
-            const newPair = Math.max(0, Math.min(index, maxPair));
-            if (playSound && newPair !== currentPair) playSwipeSound();
-            currentPair = newPair;
+        function showPage(index, playSound = false) {
+            const newPage = Math.max(0, Math.min(index, maxPage));
+            if (playSound && newPage !== currentPage) playSwipeSound();
+            currentPage = newPage;
             setTransition(true);
-            updateCarousel(-currentPair * pairWidthVW);
-            lastOffset = -currentPair * pairWidthVW;
+            updateCarousel(-currentPage * pageWidthVW);
+            lastOffset = -currentPage * pageWidthVW;
         }
 
         // Touch events for smooth swipe
         carousel.addEventListener('touchstart', function(e) {
             if (e.touches.length !== 1) return;
             isDragging = true;
+            dragMoved = false;
             setTransition(false);
             startX = e.touches[0].clientX;
             dragOffset = 0;
@@ -478,11 +481,12 @@
         carousel.addEventListener('touchmove', function(e) {
             if (!isDragging) return;
             currentX = e.touches[0].clientX;
+            if (Math.abs(currentX - startX) > 10) dragMoved = true;
             dragOffset = ((currentX - startX) / window.innerWidth) * 100; // in vw
             let offsetVW = lastOffset + dragOffset;
             // Clamp so you can't drag past ends
             if (offsetVW > 0) offsetVW = 0;
-            if (offsetVW < -maxPair * pairWidthVW) offsetVW = -maxPair * pairWidthVW;
+            if (offsetVW < -maxPage * pageWidthVW) offsetVW = -maxPage * pageWidthVW;
             updateCarousel(offsetVW);
             e.preventDefault(); // Prevent page scroll
         }, { passive: false });
@@ -490,20 +494,30 @@
             if (!isDragging) return;
             isDragging = false;
             setTransition(true);
-            // Snap to nearest pair
+            if (!dragMoved) {
+                // Treat as tap: trigger click on touched image
+                const touch = e.changedTouches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('letter-img')) {
+                    target.click();
+                }
+                return;
+            }
+            // Snap to nearest page
             let totalOffset = lastOffset + dragOffset;
-            let snappedPair = Math.round(-totalOffset / pairWidthVW);
-            snappedPair = Math.max(0, Math.min(snappedPair, maxPair));
-            if (snappedPair !== currentPair) playSwipeSound();
-            currentPair = snappedPair;
-            updateCarousel(-currentPair * pairWidthVW);
-            lastOffset = -currentPair * pairWidthVW;
+            let snappedPage = Math.round(-totalOffset / pageWidthVW);
+            snappedPage = Math.max(0, Math.min(snappedPage, maxPage));
+            if (snappedPage !== currentPage) playSwipeSound();
+            currentPage = snappedPage;
+            updateCarousel(-currentPage * pageWidthVW);
+            lastOffset = -currentPage * pageWidthVW;
             e.preventDefault(); // Prevent page scroll
         }, { passive: false });
 
         // Mouse drag for desktop
         carousel.addEventListener('mousedown', function(e) {
             isDragging = true;
+            dragMoved = false;
             setTransition(false);
             startX = e.clientX;
             dragOffset = 0;
@@ -512,33 +526,43 @@
         window.addEventListener('mousemove', function(e) {
             if (!isDragging) return;
             currentX = e.clientX;
+            if (Math.abs(currentX - startX) > 5) dragMoved = true;
             dragOffset = ((currentX - startX) / window.innerWidth) * 100;
             let offsetVW = lastOffset + dragOffset;
             if (offsetVW > 0) offsetVW = 0;
-            if (offsetVW < -maxPair * pairWidthVW) offsetVW = -maxPair * pairWidthVW;
+            if (offsetVW < -maxPage * pageWidthVW) offsetVW = -maxPage * pageWidthVW;
             updateCarousel(offsetVW);
         });
         window.addEventListener('mouseup', function(e) {
             if (!isDragging) return;
             isDragging = false;
             setTransition(true);
+            if (!dragMoved) {
+                // Treat as click: trigger click on image
+                const target = document.elementFromPoint(e.clientX, e.clientY);
+                if (target && target.classList.contains('letter-img')) {
+                    target.click();
+                }
+                document.body.style.userSelect = '';
+                return;
+            }
             let totalOffset = lastOffset + dragOffset;
-            let snappedPair = Math.round(-totalOffset / pairWidthVW);
-            snappedPair = Math.max(0, Math.min(snappedPair, maxPair));
-            if (snappedPair !== currentPair) playSwipeSound();
-            currentPair = snappedPair;
-            updateCarousel(-currentPair * pairWidthVW);
-            lastOffset = -currentPair * pairWidthVW;
+            let snappedPage = Math.round(-totalOffset / pageWidthVW);
+            snappedPage = Math.max(0, Math.min(snappedPage, maxPage));
+            if (snappedPage !== currentPage) playSwipeSound();
+            currentPage = snappedPage;
+            updateCarousel(-currentPage * pageWidthVW);
+            lastOffset = -currentPage * pageWidthVW;
             document.body.style.userSelect = '';
         });
 
         // Keyboard navigation (desktop)
         window.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') showPair(currentPair - 1, true);
-            if (e.key === 'ArrowRight') showPair(currentPair + 1, true);
+            if (e.key === 'ArrowLeft') showPage(currentPage - 1, true);
+            if (e.key === 'ArrowRight') showPage(currentPage + 1, true);
         });
         // Initial state
-        showPair(0);
+        showPage(0);
     });
     </script>
     </div>
