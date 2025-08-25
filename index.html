@@ -690,11 +690,11 @@
         video.height = 600;
         video.autoplay = true;
         video.loop = true;
-    video.muted = true;
+        video.muted = true;
         video.playsInline = true;
         video.style.display = 'none';
         document.body.appendChild(video);
-        video.play();
+        let started = false;
         function drawFrame() {
             if (!videoPlaying) return;
             const ctx = canvas.getContext('2d');
@@ -703,6 +703,20 @@
             animationFrameId = requestAnimationFrame(drawFrame);
         }
         video.addEventListener('play', drawFrame);
+        // Try to play, if fails (mobile), wait for user gesture
+        video.play().then(() => { started = true; }).catch(() => {
+            // Listen for first user gesture
+            const tryStart = () => {
+                if (!started) {
+                    video.play();
+                    started = true;
+                }
+                window.removeEventListener('touchstart', tryStart);
+                window.removeEventListener('mousedown', tryStart);
+            };
+            window.addEventListener('touchstart', tryStart, { once: true });
+            window.addEventListener('mousedown', tryStart, { once: true });
+        });
     }
 
     function stopVideo() {
