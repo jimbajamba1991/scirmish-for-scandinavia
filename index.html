@@ -537,13 +537,11 @@
                 dragOffset = 0;
                 return;
             }
-            // Snap to nearest page
+            // No snapping: just clamp to min/max
             let totalOffset = lastOffset + dragOffset;
-            let snappedPage = Math.round(-totalOffset / pageWidthVW);
-            snappedPage = Math.max(0, Math.min(snappedPage, maxPage));
-            if (snappedPage !== currentPage) playSwipeSound();
-            currentPage = snappedPage;
-            lastOffset = -currentPage * pageWidthVW;
+            if (totalOffset > 0) totalOffset = 0;
+            if (totalOffset < -maxPage * pageWidthVW) totalOffset = -maxPage * pageWidthVW;
+            lastOffset = totalOffset;
             updateCarousel(lastOffset);
             dragOffset = 0;
             e.preventDefault(); // Prevent page scroll
@@ -581,13 +579,13 @@
                 document.body.style.userSelect = '';
                 return;
             }
+            // No snapping: just clamp to min/max
             let totalOffset = lastOffset + dragOffset;
-            let snappedPage = Math.round(-totalOffset / pageWidthVW);
-            snappedPage = Math.max(0, Math.min(snappedPage, maxPage));
-            if (snappedPage !== currentPage) playSwipeSound();
-            currentPage = snappedPage;
-            updateCarousel(-currentPage * pageWidthVW);
-            lastOffset = -currentPage * pageWidthVW;
+            if (totalOffset > 0) totalOffset = 0;
+            if (totalOffset < -maxPage * pageWidthVW) totalOffset = -maxPage * pageWidthVW;
+            lastOffset = totalOffset;
+            updateCarousel(lastOffset);
+            dragOffset = 0;
             document.body.style.userSelect = '';
         });
 
@@ -863,7 +861,7 @@
     }
 
 
-    console.log('d.0');
+    console.log('version 1.3: Carousel now has no snapping. After swiping, the carousel stays exactly where the user leaves it. This version removes the snap-to-page behavior for a smoother, freeform swipe experience.');
     </script>
 </body>
 </html>
