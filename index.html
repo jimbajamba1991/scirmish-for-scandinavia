@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -277,14 +276,27 @@
             const headerBtns = document.querySelectorAll('.header-btn');
             // Get the contact message container
             const contactMsg = document.getElementById('contact-message');
-            // Find the 'Handledning', 'Startsida', 'Kontakt', and 'Om Monsterbokstäverna' buttons by their text
+            // Find the header buttons by their text
             const handledningBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Handledning');
             const startsidaBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Startsida');
             const kontaktBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Kontakt');
             const omMonsterBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Om Monsterbokstäverna');
-            // Get the canvas and the row of letter images
+            const utvecklingsbloggBtn = Array.from(headerBtns).find(btn => btn.textContent.trim() === 'Utvecklingsblogg');
+            // When 'Utvecklingsblogg' is clicked, show the blog entry
+            if (utvecklingsbloggBtn && contactMsg) {
+                utvecklingsbloggBtn.addEventListener('click', function() {
+                    contactMsg.innerHTML = `<div style='text-align:left;white-space:pre-line;'><b>2025-08-24</b><br>Idag använde jag min telefon för att visa en första, enkel version av webbsidan med bokstäver och 3d-mun för en femåring.\n\nJag frågade om barnet visste hur dessa bokstäver lät. Barnet svarade relativt enkelt att bokstaven A lät, “aaaaa”. När jag frågade om hur bokstaven L lät så blev barnet något osäker och svarade efter en stund “eeeeeel”.\n\nDetta tycker jag är så spännande eftersom min förhoppning är att materialet ska hjälpa barn att bli medvetna om samt förstå de grundläggande principerna och reglerna som finns kring bokstäver, läsande & skrivande. Det är ganska mycket begärt att barnen ska lista ut alla dessa regler själva.\n\nDet blev enkelt för mig att förklara att alla bokstäver har ett eget bokstavsljud - och vi kunde träna på att säga och komma ihåg de olika bokstavsljuden. Dessutom är det roligt att se hur det digitala mediet kan skapa en sån intuitiv nyfikenhet hos barnet när det används i ett medvetet syfte.</div>`;
+                    contactMsg.style.display = 'block';
+                    if (canvas) canvas.style.display = 'none';
+                    if (letterRow) letterRow.style.display = 'none';
+                    const dynCanvas = document.getElementById('dynamic-table-canvas');
+                    if (dynCanvas) dynCanvas.style.display = 'none';
+                });
+            }
+            // Get the canvas, the row of letter images, and the carousel container
             const canvas = document.getElementById('retroCanvas');
             const letterRow = document.querySelector('.letter-row');
+            const letterCarouselContainer = document.querySelector('.letter-carousel-container');
 
             // When 'Handledning' is clicked, show a 3x8 table of buttons
             if (handledningBtn && contactMsg) {
@@ -331,20 +343,28 @@
             headerBtns.forEach(btn => {
                 // Hide the dynamic canvas when any header button is clicked
                 if (btn !== startsidaBtn) {
-                    // For all buttons except 'Startsida', hide the canvas and letter images when clicked
+                    // For all buttons except 'Startsida', hide the canvas, letter images row, and carousel when clicked
                     btn.addEventListener('click', function() {
-                        if (canvas) canvas.style.display = 'none'; // Hide the canvas
-                        if (letterRow) letterRow.style.display = 'none'; // Hide the letter images row
+                        if (canvas) canvas.style.display = 'none';
+                        if (letterRow) letterRow.style.display = 'none';
+                        if (letterCarouselContainer) letterCarouselContainer.style.display = 'none';
                         const dynCanvas = document.getElementById('dynamic-table-canvas');
                         if (dynCanvas) dynCanvas.style.display = 'none';
+                        // Remove summary image if present
+                        const prev = document.getElementById('summary-img-standalone');
+                        if (prev) prev.remove();
                     });
                 } else {
-                    // For the 'Startsida' button, show the canvas and letter images when clicked
+                    // For the 'Startsida' button, show the canvas, letter images row, and carousel when clicked
                     btn.addEventListener('click', function() {
-                        if (canvas) canvas.style.display = ''; // Show the canvas (reset to default)
-                        if (letterRow) letterRow.style.display = ''; // Show the letter images row (reset to default)
+                        if (canvas) canvas.style.display = '';
+                        if (letterRow) letterRow.style.display = '';
+                        if (letterCarouselContainer) letterCarouselContainer.style.display = '';
                         const dynCanvas = document.getElementById('dynamic-table-canvas');
                         if (dynCanvas) dynCanvas.style.display = 'none';
+                        // Remove summary image if present
+                        const prev = document.getElementById('summary-img-standalone');
+                        if (prev) prev.remove();
                     });
                 }
             });
@@ -360,21 +380,33 @@
             // When 'Om Monsterbokstäverna' is clicked, show info text
             if (omMonsterBtn && contactMsg) {
                 omMonsterBtn.addEventListener('click', function() {
-                    contactMsg.innerHTML = `Modernt, barnvänligt och motiverande material som tydliggör koppling bokstavsnamn - bokstavsljud, liten-stor bokstav och som använder inbyggda munbilder för att öka medvetenhet kring hur vi kan använda munnen för att säga de olika bokstavsljuden.<br><br>
-
-    Vi erbjuder ett tydligt stöd digitalt med handledning samt ett ansikte i 3d som med animation visar hur man använder munnen, läppar, tunga och tänder för att säga bokstävernas olika ljud.<br><br>
-
-    Metoden bryter ner övningar i svårighetsnivå med ett tydligt stöd för<br>
-    Att introducera och förklara övningen<br>
-    Visuellt stöd för att skilja övningarna åt<br>
-    Att enkelt få en bild av barnets nuvarande förmåga så träningen blir utifrån barnets proximala utvecklingszon.`;
-                    contactMsg.style.display = 'block';
+                    contactMsg.style.display = 'none';
+                    // Remove any previous summary image
+                    const prev = document.getElementById('summary-img-standalone');
+                    if (prev) prev.remove();
+                    // Add the summary image directly to the body (centered)
+                    const img = document.createElement('img');
+                    img.src = 'summary.png';
+                    img.alt = 'Sammanfattning';
+                    img.id = 'summary-img-standalone';
+                    img.style.maxWidth = '98vw';
+                    img.style.height = 'auto';
+                    img.style.display = 'block';
+                    img.style.margin = '80px auto 0 auto';
+                    img.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)';
+                    img.style.borderRadius = '12px';
+                    document.body.appendChild(img);
                 });
             }
 
             // When any other header button is clicked (except Kontakt, Om Monsterbokstäverna, Handledning), hide the contact message
             headerBtns.forEach(btn => {
-                if (btn.textContent.trim() !== 'Kontakt' && btn.textContent.trim() !== 'Om Monsterbokstäverna' && btn.textContent.trim() !== 'Handledning') {
+                if (
+                    btn.textContent.trim() !== 'Kontakt' &&
+                    btn.textContent.trim() !== 'Om Monsterbokstäverna' &&
+                    btn.textContent.trim() !== 'Handledning' &&
+                    btn.textContent.trim() !== 'Utvecklingsblogg'
+                ) {
                     btn.addEventListener('click', function() {
                         if (contactMsg) contactMsg.style.display = 'none';
                     });
@@ -416,6 +448,7 @@
             <button class="header-btn">Handledning</button>
             <button class="header-btn">Om Monsterbokstäverna</button>
             <button class="header-btn">Kontakt</button>
+            <button class="header-btn">Utvecklingsblogg</button>
         </div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;">
@@ -501,6 +534,7 @@
                 if (target && target.classList.contains('letter-img')) {
                     target.click();
                 }
+                dragOffset = 0;
                 return;
             }
             // Snap to nearest page
@@ -509,8 +543,9 @@
             snappedPage = Math.max(0, Math.min(snappedPage, maxPage));
             if (snappedPage !== currentPage) playSwipeSound();
             currentPage = snappedPage;
-            updateCarousel(-currentPage * pageWidthVW);
             lastOffset = -currentPage * pageWidthVW;
+            updateCarousel(lastOffset);
+            dragOffset = 0;
             e.preventDefault(); // Prevent page scroll
         }, { passive: false });
 
@@ -828,7 +863,7 @@
     }
 
 
-    console.log('c.0');
+    console.log('d.0');
     </script>
 </body>
 </html>
