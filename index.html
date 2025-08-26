@@ -521,7 +521,8 @@
             if (offsetVW > 0) offsetVW = 0;
             if (offsetVW < -maxPage * pageWidthVW) offsetVW = -maxPage * pageWidthVW;
             updateCarousel(offsetVW);
-            e.preventDefault(); // Prevent page scroll
+            // Always prevent default to stop window/canvas from moving
+            e.preventDefault();
         }, { passive: false });
         carousel.addEventListener('touchend', function(e) {
             if (!isDragging) return;
