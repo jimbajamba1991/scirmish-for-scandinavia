@@ -512,7 +512,10 @@
             e.preventDefault(); // Prevent page scroll
         }, { passive: false });
         carousel.addEventListener('touchmove', function(e) {
-            if (!isDragging) return;
+            if (!isDragging) {
+                e.preventDefault();
+                return;
+            }
             currentX = e.touches[0].clientX;
             if (Math.abs(currentX - startX) > 10) dragMoved = true;
             dragOffset = ((currentX - startX) / window.innerWidth) * 100; // in vw
@@ -521,11 +524,13 @@
             if (offsetVW > 0) offsetVW = 0;
             if (offsetVW < -maxPage * pageWidthVW) offsetVW = -maxPage * pageWidthVW;
             updateCarousel(offsetVW);
-            // Always prevent default to stop window/canvas from moving
             e.preventDefault();
         }, { passive: false });
         carousel.addEventListener('touchend', function(e) {
-            if (!isDragging) return;
+            if (!isDragging) {
+                e.preventDefault();
+                return;
+            }
             isDragging = false;
             setTransition(true);
             if (!dragMoved) {
@@ -536,6 +541,7 @@
                     target.click();
                 }
                 dragOffset = 0;
+                e.preventDefault();
                 return;
             }
             // No snapping: just clamp to min/max
@@ -545,7 +551,7 @@
             lastOffset = totalOffset;
             updateCarousel(lastOffset);
             dragOffset = 0;
-            e.preventDefault(); // Prevent page scroll
+            e.preventDefault();
         }, { passive: false });
 
         // Mouse drag for desktop
