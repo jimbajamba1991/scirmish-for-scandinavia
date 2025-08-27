@@ -358,15 +358,15 @@ function showLevelOneCanvas() {
     if (!wrap) return;
     const canvas = document.createElement('canvas');
     canvas.id = 'levelOne-canvas';
-    canvas.width = 900;
-    canvas.height = 675;
+    canvas.width = 1080;
+    canvas.height = 1920;
     canvas.style.background = '#eaf4fb';
     canvas.style.border = '2px solid #7fa8c9';
     canvas.style.borderRadius = '12px';
     canvas.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)';
     canvas.style.display = 'block';
-    canvas.style.width = '900px';
-    canvas.style.height = '675px';
+    canvas.style.width = '360px';
+    canvas.style.height = '640px';
     canvas.style.zIndex = 300;
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
@@ -377,8 +377,8 @@ function showLevelOneCanvas() {
 function playLevelOneVideoOnCanvas(canvas) {
     let video = document.createElement('video');
     video.src = 'levelOne.mp4';
-    video.width = canvas.width;
-    video.height = canvas.height;
+    video.width = 1080;
+    video.height = 1920;
     video.autoplay = true;
     video.loop = false;
     video.muted = false; // play with sound
