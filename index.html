@@ -305,7 +305,7 @@
             // When 'Handledning' is clicked, show a 3x8 table of buttons
             if (handledningBtn && contactMsg) {
                 handledningBtn.addEventListener('click', function() {
-                    let tableHtml = '<div id="handledning-flex" style="display:flex;flex-direction:row;align-items:stretch;justify-content:center;width:100%;gap:2rem;max-width:1200px;margin:0 auto;">';
+                    let tableHtml = '<div id="handledning-flex" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100vw;min-width:0;gap:2rem;">';
                     tableHtml += '<div id="handledning-table-wrap" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
                     for (let y = 0; y < 8; y++) {
                         tableHtml += '<tr>';
@@ -367,8 +367,6 @@ function showLevelOneCanvas() {
     canvas.style.display = 'block';
     canvas.style.width = '900px';
     canvas.style.height = '675px';
-    canvas.style.maxWidth = '100%';
-    canvas.style.maxHeight = '80vh';
     canvas.style.zIndex = 300;
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
