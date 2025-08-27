@@ -384,7 +384,20 @@ function showLevelCanvas(videoFile) {
     playLevelVideoOnCanvas(canvas, videoFile);
 }
 function playLevelVideoOnCanvas(canvas, videoFile) {
+    // Remove any previous video and cancel animation frame
+    const prevVideo = document.getElementById('handledning-video');
+    if (prevVideo) {
+        prevVideo.pause();
+        prevVideo.src = '';
+        prevVideo.load();
+        prevVideo.remove();
+    }
+    if (window.handledningAnimationFrameId) {
+        cancelAnimationFrame(window.handledningAnimationFrameId);
+        window.handledningAnimationFrameId = null;
+    }
     let video = document.createElement('video');
+    video.id = 'handledning-video';
     video.src = videoFile;
     video.width = 1080;
     video.height = 1920;
@@ -394,18 +407,20 @@ function playLevelVideoOnCanvas(canvas, videoFile) {
     video.playsInline = true;
     video.style.display = 'none';
     document.body.appendChild(video);
-    let animationFrameId;
     function drawFrame() {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        animationFrameId = requestAnimationFrame(drawFrame);
+        window.handledningAnimationFrameId = requestAnimationFrame(drawFrame);
     }
     video.addEventListener('play', drawFrame);
     video.addEventListener('ended', function() {
         document.body.removeChild(video);
         if (canvas) canvas.remove();
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        if (window.handledningAnimationFrameId) {
+            cancelAnimationFrame(window.handledningAnimationFrameId);
+            window.handledningAnimationFrameId = null;
+        }
     });
     video.play();
 }
