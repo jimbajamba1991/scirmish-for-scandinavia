@@ -344,7 +344,7 @@
                                 // Play the correct video for each Nivå button
                                 const label = btn.textContent.trim();
                                 if (label === 'Nivå 1') {
-                                    showLevelCanvas('LevelOne.mp4');
+                                    showLevelCanvas('levelOne.mp4');
                                 } else if (label === 'Nivå 2') {
                                     showLevelCanvas('levelTwoo.mp4');
                                 } else if (label === 'Nivå 3') {
@@ -359,7 +359,7 @@
                             });
                         });
                     }, 0);
-// Show a new canvas and play LevelOne.mp4 on it
+// Show a new canvas and play levelOne.mp4 on it
 function showLevelCanvas(videoFile) {
     // Remove any previous level canvas (any canvas with id ending in -canvas)
     const wrap = document.getElementById('handledning-canvas-wrap');
@@ -426,12 +426,12 @@ function playLevelVideoOnCanvas(canvas, videoFile) {
     });
     video.play();
 }
-// Play LevelOne.mp4 in the canvas
+// Play levelOne.mp4 in the canvas
 function playLevelOneVideo() {
     stopVideo();
     videoPlaying = true;
     video = document.createElement('video');
-    video.src = 'LevelOne.mp4';
+    video.src = 'levelOne.mp4';
     video.width = 600;
     video.height = 600;
     video.autoplay = true;
