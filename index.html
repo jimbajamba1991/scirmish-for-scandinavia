@@ -337,9 +337,40 @@
                         tableButtons.forEach(btn => {
                             btn.addEventListener('click', function() {
                                 if (dynCanvas) dynCanvas.style.display = 'block';
+                                // Play levelOne.mp4 if Nivå 1 is clicked
+                                if (btn.textContent.trim() === 'Nivå 1') {
+                                    playLevelOneVideo();
+                                }
                             });
                         });
                     }, 0);
+// Play levelOne.mp4 in the canvas
+function playLevelOneVideo() {
+    stopVideo();
+    videoPlaying = true;
+    video = document.createElement('video');
+    video.src = 'levelOne.mp4';
+    video.width = 600;
+    video.height = 600;
+    video.autoplay = true;
+    video.loop = false;
+    video.muted = true;
+    video.playsInline = true;
+    video.style.display = 'none';
+    document.body.appendChild(video);
+    video.addEventListener('play', function drawFrame() {
+        if (!videoPlaying) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        animationFrameId = requestAnimationFrame(drawFrame);
+    });
+    video.addEventListener('ended', function() {
+        videoPlaying = false;
+        document.body.removeChild(video);
+    });
+    video.play();
+}
                 });
             }
 
