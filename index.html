@@ -305,8 +305,8 @@
             // When 'Handledning' is clicked, show a 3x8 table of buttons
             if (handledningBtn && contactMsg) {
                 handledningBtn.addEventListener('click', function() {
-                    let tableHtml = '<div id="handledning-flex" style="display:flex;flex-direction:row;align-items:flex-start;justify-content:center;width:100%;height:100%;gap:2rem;">';
-                    tableHtml += '<div id="handledning-table-wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
+                    let tableHtml = '<div id="handledning-flex" style="display:flex;flex-direction:row;align-items:stretch;justify-content:center;width:100%;gap:2rem;max-width:1200px;margin:0 auto;">';
+                    tableHtml += '<div id="handledning-table-wrap" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
                     for (let y = 0; y < 8; y++) {
                         tableHtml += '<tr>';
                         for (let x = 0; x < 3; x++) {
@@ -326,8 +326,8 @@
                         tableHtml += '</tr>';
                     }
                     tableHtml += '</table></div>';
-                    // Canvas placeholder
-                    tableHtml += '<div id="handledning-canvas-wrap" style="display:flex;align-items:center;justify-content:center;"></div>';
+                    // Canvas placeholder, right side
+                    tableHtml += '<div id="handledning-canvas-wrap" style="flex:1;display:flex;align-items:center;justify-content:center;min-width:0;"></div>';
                     tableHtml += '</div>';
                     contactMsg.innerHTML = tableHtml;
                     contactMsg.style.display = 'block';
@@ -364,12 +364,11 @@ function showLevelOneCanvas() {
     canvas.style.border = '2px solid #7fa8c9';
     canvas.style.borderRadius = '12px';
     canvas.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)';
-    canvas.style.maxWidth = '95vw';
+    canvas.style.display = 'block';
+    canvas.style.width = '900px';
+    canvas.style.height = '675px';
+    canvas.style.maxWidth = '100%';
     canvas.style.maxHeight = '80vh';
-    canvas.style.width = '36vw';
-    canvas.style.height = '24vw';
-    canvas.style.minWidth = '320px';
-    canvas.style.minHeight = '200px';
     canvas.style.zIndex = 300;
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
