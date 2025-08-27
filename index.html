@@ -361,14 +361,14 @@
                     }, 0);
 // Show a new canvas and play levelOne.mp4 on it
 function showLevelCanvas(videoFile) {
-    // Remove any previous level canvas
-    let prev = document.getElementById('levelOne-canvas');
-    if (prev) prev.remove();
-    // Insert the canvas into the handledning-canvas-wrap
+    // Remove any previous level canvas (any canvas with id ending in -canvas)
     const wrap = document.getElementById('handledning-canvas-wrap');
     if (!wrap) return;
+    Array.from(wrap.querySelectorAll('canvas[id$="-canvas"]')).forEach(c => c.remove());
+    // Create a unique id for the canvas based on the video file name
+    const levelId = videoFile.replace(/\..*$/, '').replace(/[^a-zA-Z0-9]/g, '') + '-canvas';
     const canvas = document.createElement('canvas');
-    canvas.id = 'levelOne-canvas';
+    canvas.id = levelId;
     canvas.width = 1080;
     canvas.height = 1920;
     canvas.style.background = '#eaf4fb';
@@ -379,6 +379,8 @@ function showLevelCanvas(videoFile) {
     canvas.style.width = '360px';
     canvas.style.height = '640px';
     canvas.style.zIndex = 300;
+    canvas.style.position = 'relative';
+    canvas.style.left = '-500px';
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
     playLevelVideoOnCanvas(canvas, videoFile);
