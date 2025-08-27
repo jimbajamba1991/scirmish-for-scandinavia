@@ -305,7 +305,8 @@
             // When 'Handledning' is clicked, show a 3x8 table of buttons
             if (handledningBtn && contactMsg) {
                 handledningBtn.addEventListener('click', function() {
-                    let tableHtml = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
+                    let tableHtml = '<div id="handledning-flex" style="display:flex;flex-direction:row;align-items:flex-start;justify-content:center;width:100%;height:100%;gap:2rem;">';
+                    tableHtml += '<div id="handledning-table-wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
                     for (let y = 0; y < 8; y++) {
                         tableHtml += '<tr>';
                         for (let x = 0; x < 3; x++) {
@@ -325,6 +326,9 @@
                         tableHtml += '</tr>';
                     }
                     tableHtml += '</table></div>';
+                    // Canvas placeholder
+                    tableHtml += '<div id="handledning-canvas-wrap" style="display:flex;align-items:center;justify-content:center;"></div>';
+                    tableHtml += '</div>';
                     contactMsg.innerHTML = tableHtml;
                     contactMsg.style.display = 'block';
                     // Hide the dynamic canvas when table is redrawn
@@ -349,30 +353,26 @@ function showLevelOneCanvas() {
     // Remove any previous levelOne canvas
     let prev = document.getElementById('levelOne-canvas');
     if (prev) prev.remove();
-    // Hide contact message
-    const contactMsg = document.getElementById('contact-message');
-    if (contactMsg) contactMsg.style.display = 'none';
-    // Create and style the new canvas
+    // Insert the canvas into the handledning-canvas-wrap
+    const wrap = document.getElementById('handledning-canvas-wrap');
+    if (!wrap) return;
     const canvas = document.createElement('canvas');
     canvas.id = 'levelOne-canvas';
     canvas.width = 900;
     canvas.height = 675;
-    canvas.style.position = 'fixed';
-    canvas.style.left = '50vw';
-    canvas.style.top = '50vh';
-    canvas.style.transform = 'translate(-50%, -50%)';
     canvas.style.background = '#eaf4fb';
     canvas.style.border = '2px solid #7fa8c9';
     canvas.style.borderRadius = '12px';
     canvas.style.boxShadow = '0 4px 24px rgba(0,0,0,0.08)';
     canvas.style.maxWidth = '95vw';
     canvas.style.maxHeight = '80vh';
-    canvas.style.width = '90vw';
-    canvas.style.height = '60vw';
+    canvas.style.width = '36vw';
+    canvas.style.height = '24vw';
     canvas.style.minWidth = '320px';
     canvas.style.minHeight = '200px';
     canvas.style.zIndex = 300;
-    document.body.appendChild(canvas);
+    wrap.innerHTML = '';
+    wrap.appendChild(canvas);
     playLevelOneVideoOnCanvas(canvas);
 }
 
@@ -384,7 +384,7 @@ function playLevelOneVideoOnCanvas(canvas) {
     video.height = canvas.height;
     video.autoplay = true;
     video.loop = false;
-    video.muted = true;
+    video.muted = false; // play with sound
     video.playsInline = true;
     video.style.display = 'none';
     document.body.appendChild(video);
