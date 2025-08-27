@@ -341,16 +341,27 @@
                         tableButtons.forEach(btn => {
                             btn.addEventListener('click', function() {
                                 if (dynCanvas) dynCanvas.style.display = 'block';
-                                // Play levelOne.mp4 if Nivå 1 is clicked, on a new canvas
-                                if (btn.textContent.trim() === 'Nivå 1') {
-                                    showLevelOneCanvas();
+                                // Play the correct video for each Nivå button
+                                const label = btn.textContent.trim();
+                                if (label === 'Nivå 1') {
+                                    showLevelCanvas('levelOne.mp4');
+                                } else if (label === 'Nivå 2') {
+                                    showLevelCanvas('levelTwoo.mp4');
+                                } else if (label === 'Nivå 3') {
+                                    showLevelCanvas('levelThree.mp4');
+                                } else if (label === 'Nivå 4') {
+                                    showLevelCanvas('levelFour.mp4');
+                                } else if (label === 'Nivå 5') {
+                                    showLevelCanvas('levelFive.mp4');
+                                } else if (label === 'Nivå 6') {
+                                    showLevelCanvas('levelSix.mp4');
                                 }
                             });
                         });
                     }, 0);
 // Show a new canvas and play levelOne.mp4 on it
-function showLevelOneCanvas() {
-    // Remove any previous levelOne canvas
+function showLevelCanvas(videoFile) {
+    // Remove any previous level canvas
     let prev = document.getElementById('levelOne-canvas');
     if (prev) prev.remove();
     // Insert the canvas into the handledning-canvas-wrap
@@ -370,13 +381,11 @@ function showLevelOneCanvas() {
     canvas.style.zIndex = 300;
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
-    playLevelOneVideoOnCanvas(canvas);
+    playLevelVideoOnCanvas(canvas, videoFile);
 }
-
-// Play levelOne.mp4 on a given canvas
-function playLevelOneVideoOnCanvas(canvas) {
+function playLevelVideoOnCanvas(canvas, videoFile) {
     let video = document.createElement('video');
-    video.src = 'levelOne.mp4';
+    video.src = videoFile;
     video.width = 1080;
     video.height = 1920;
     video.autoplay = true;
