@@ -304,50 +304,37 @@
 
             // When 'Handledning' is clicked, show a 3x8 table of buttons
             if (handledningBtn && contactMsg) {
-                quizBtn.addEventListener('click', function() {
-                    // Pick a random letter
-                    const pick = quizLetters[Math.floor(Math.random() * quizLetters.length)];
-                    quizAnswer = pick.img;
-                    quizActive = true;
-                    // Play the corresponding video
-                    stopVideo();
-                    videoPlaying = true;
-                    video = document.createElement('video');
-                    video.src = pick.video;
-                    video.width = 600;
-                    video.height = 600;
-                    video.autoplay = true;
-                    video.loop = false;
-                    video.muted = true;
-                    video.playsInline = true;
-                    video.style.display = 'none';
-                    document.body.appendChild(video);
-                    // If atalk.mp4, also play aa.mp3
-                    let quizAudio = null;
-                    if (pick.video === 'atalk.mp4') {
-                        quizAudio = document.createElement('audio');
-                        quizAudio.src = 'aa.mp3';
-                        quizAudio.autoplay = true;
-                        document.body.appendChild(quizAudio);
-                    }
-                    video.addEventListener('play', function drawFrame() {
-                        if (!videoPlaying) return;
-                        const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        animationFrameId = requestAnimationFrame(drawFrame);
-                    });
-                    video.addEventListener('ended', function() {
-                        videoPlaying = false;
-                        document.body.removeChild(video);
-                        if (quizAudio) {
-                            quizAudio.pause();
-                            document.body.removeChild(quizAudio);
+                handledningBtn.addEventListener('click', function() {
+                    let tableHtml = '<div id="handledning-flex" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100vw;min-width:0;gap:2rem;">';
+                    tableHtml += '<div id="handledning-table-wrap" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;"><table style="border-collapse:separate;border-spacing:1.2rem 1.2rem;">';
+                    for (let y = 0; y < 8; y++) {
+                        tableHtml += '<tr>';
+                        for (let x = 0; x < 3; x++) {
+                            // Only show the first button in the first row
+                            if (y === 0 && x > 0) continue;
+                            let label = '';
+                            let extraClass = '';
+                            if (x === 0) {
+                                if (y === 0) {
+                                    label = 'Svårighetsnivå';
+                                    extraClass = 'unclickable';
+                                } else label = 'Nivå ' + y;
+                            } else if (x === 1) label = 'Instruktionsfilm';
+                            else if (x === 2) label = 'Övningar';
+                            tableHtml += `<td><button class="${extraClass}" style=\"padding:1.2rem 2.5rem;font-size:1.1rem;border-radius:8px;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;\">${label}</button></td>`;
                         }
-                    });
-                    video.play();
-                    if (quizAudio) quizAudio.play();
-                });
+                        tableHtml += '</tr>';
+                    }
+                    tableHtml += '</table></div>';
+                    // Canvas placeholder, right side
+                    tableHtml += '<div id="handledning-canvas-wrap" style="flex:1;display:flex;align-items:center;justify-content:center;min-width:0;"></div>';
+                    tableHtml += '</div>';
+                    contactMsg.innerHTML = tableHtml;
+                    contactMsg.style.display = 'block';
+                    // Hide the dynamic canvas when table is redrawn
+                    const dynCanvas = document.getElementById('dynamic-table-canvas');
+                    if (dynCanvas) dynCanvas.style.display = 'none';
+
                     // Add click listeners to all table buttons except the unclickable one
                     setTimeout(function() {
                         const tableButtons = contactMsg.querySelectorAll('button:not(.unclickable)');
@@ -667,14 +654,6 @@ function playLevelOneVideo() {
         video.playsInline = true;
         video.style.display = 'none';
         document.body.appendChild(video);
-        // If atalk.mp4, also play aa.mp3
-        let quizAudio = null;
-        if (pick.video === 'atalk.mp4') {
-            quizAudio = document.createElement('audio');
-            quizAudio.src = 'aa.mp3';
-            quizAudio.autoplay = true;
-            document.body.appendChild(quizAudio);
-        }
         video.addEventListener('play', function drawFrame() {
             if (!videoPlaying) return;
             const ctx = canvas.getContext('2d');
@@ -685,13 +664,8 @@ function playLevelOneVideo() {
         video.addEventListener('ended', function() {
             videoPlaying = false;
             document.body.removeChild(video);
-            if (quizAudio) {
-                quizAudio.pause();
-                document.body.removeChild(quizAudio);
-            }
         });
         video.play();
-        if (quizAudio) quizAudio.play();
     }
     function pickRandomQuizIndex(excludeIndex) {
         let idx;
